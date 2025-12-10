@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <conio.h>   // For _getch()
 #include <cctype>
 
 using namespace std;
@@ -26,12 +27,40 @@ void createUser() {
     cout << "Account Created Successfully\n";
 }
 
+string getHiddenPassword() {
+    string password = "";
+    char ch;
+
+    while (true) {
+        ch = _getch();   // get character without showing it
+
+        if (ch == 13) { // ENTER key
+            cout << endl;
+            break;
+        }
+        else if (ch == 8) { // BACKSPACE
+            if (!password.empty()) {
+                password.pop_back();
+                cout << "\b \b";  // erase a star
+            }
+        }
+        else {
+            password += ch;
+            cout << "*";
+        }
+    }
+
+    return password;
+}
+
+
 bool login(string& uid) {
     string id, pass;
     cout << "User ID: ";
     cin >> id;
     cout << "Password: ";
-    cin >> pass;
+    pass = getHiddenPassword();
+
 
     if (users.count(id) && users[id].password == pass) {
         if (users[id].blocked) {
@@ -51,6 +80,20 @@ string toUpperCase(string s) {
     return s;
 }
 
+double getLast24HourSpent(const string& uid) {
+    double sum = 0;
+    time_t now = time(0);
+
+    for (auto &tx : history[uid]) {
+        // Only consider DEBIT transactions in last 24 hours (86400 seconds)
+        if (tx.type == "DEBIT" && difftime(now, tx.timestamp) <= 86400) {
+            sum += tx.amount;
+        }
+    }
+    return sum;
+}
+
+
 void processTransaction(string uid) {
     double amt;
     string loc;
@@ -67,19 +110,32 @@ void processTransaction(string uid) {
     cin >> loc;
     loc = toUpperCase(loc);   // Case-insensitive normalization
 
-    // ✅ CORRECT OBJECT CREATION
-    Transaction tx(uid, amt, loc, "DEBIT");
+    // ✅ DAILY TRANSACTION COMPLIANCE CHECK (₹1,00,000 / 24 hours)
+    double spentToday = getLast24HourSpent(uid);
 
+    if (spentToday + amt > 100000) {
+        cout << "DAILY LIMIT EXCEEDED! You have already spent Rs. "
+            << spentToday << " in the last 24 hours.\n";
+        return;
+    }
+
+    // Proceed with DEBIT transaction
+    Transaction tx(uid, amt, loc, "DEBIT");
     int risk = FraudEngine::calculateRisk(tx, history[uid]);
+
 
     cout << "Fraud Risk Score: " << risk << endl;
 
     if (risk >= 70) {
         users[uid].blocked = true;
         FileManager::saveUsers(users);
-        cout << "!! FRAUD DETECTED - ACCOUNT BLOCKED !!\n";
-        return;
+
+        cout << "\n!! FRAUD DETECTED - ACCOUNT BLOCKED !!\n";
+        cout << "You have been logged out for security reasons.\n";
+
+        exit(0);   // ✅ IMMEDIATE TERMINATION (FORCED LOGOUT)
     }
+
 
     if (users[uid].balance >= amt) {
         users[uid].balance -= amt;
@@ -91,6 +147,7 @@ void processTransaction(string uid) {
         cout << "Insufficient Balance\n";
     }
 }
+
 
 void walletRecharge(string uid) {
     double amt;
