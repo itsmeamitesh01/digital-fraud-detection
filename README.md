@@ -31,11 +31,10 @@ The project is developed with scalable design principles aligned with **Accentur
 
 ### Enterprise Upgrade (v1.1)
 
-* Credit + Debit transaction model
-* Wallet recharge (trusted credit flow)
-* Daily transaction compliance limit
-* Admin fraud monitoring dashboard
-* Structured financial audit logs
+- Credit + Debit transaction classification
+- Fraud logic now applies only to DEBIT transactions
+- Upgraded audit log format with transaction type
+- Enterprise-ready transaction object model
 
 ---
 
