@@ -20,21 +20,43 @@ The project is developed with scalable design principles aligned with **Accentur
 
 ## ✅ Key Features
 
-### Core (v1.0)
+### v1.0 – Core Rule-Based Fraud Detection (Stable)
+- User account creation & secure login
+- Debit-only transaction engine
+- Rule-based fraud risk scoring (0–100)
+- Automated account blocking
+- File-based persistent storage (.dat)
+- Case-insensitive geo-location validation
 
-* User account creation & secure login
-* Debit-only transaction engine
-* Rule-based fraud risk scoring (0–100)
-* Automated account blocking
-* File-based persistent storage (`.dat`)
-* Case-insensitive geo-location validation
-
-### Enterprise Upgrade (v1.1)
-
+### v1.1 Phase 1 – Enterprise Transaction Foundation
 - Credit + Debit transaction classification
-- Fraud logic now applies only to DEBIT transactions
+- Fraud logic applied only to DEBIT transactions
 - Upgraded audit log format with transaction type
 - Enterprise-ready transaction object model
+
+### v1.1 Phase 2 – Wallet Recharge & Trusted CREDIT Flow
+- Wallet recharge functionality
+- CREDIT transactions increase wallet balance
+- CREDIT transactions bypass fraud checks
+- Dual-entry audit logging (CREDIT & DEBIT)
+
+### v1.1 Phase 3 – Security & Compliance Controls
+- Masked password input (***** style)
+- Immediate forced logout on fraud detection
+- Rolling 24-hour daily transaction compliance limit (₹1,00,000)
+
+### v1.1 Phase 4 – Admin Fraud Monitoring & Readable Audit Logs (Current)
+- Admin login and monitoring dashboard
+- View all users and blocked accounts
+- View all transactions
+- View suspicious (high-risk) transactions
+- Human-readable timestamps for audit logs in admin dashboard
+
+---
+
+## v1.1 Enterprise Edition Status
+With Phase 4 completed, v1.1 now represents a **full enterprise-grade fraud detection and compliance system** with user, admin, security, audit, and regulatory controls integrated.
+
 
 ---
 
@@ -160,15 +182,6 @@ userId amount location type timestamp
 * Password hashing & encryption
 * Admin export reports (CSV)
 * Kafka-based transaction streaming
-
----
-
-## 🧾 Versioning
-
-* **v1.0** – Core rule-based fraud detection (MVP)
-* **v1.1** – Enterprise compliance & transaction upgrade
-
----
 
 ## 📄 License
 
