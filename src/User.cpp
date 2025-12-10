@@ -5,6 +5,6 @@ User::User() {}
 User::User(string id, string pass) {
     userId = id;
     password = pass;
-    balance = 10000;
+    balance = 100000;
     blocked = false;
 }

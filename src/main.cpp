@@ -57,13 +57,19 @@ void processTransaction(string uid) {
 
     cout << "Enter Amount: ";
     cin >> amt;
-    
+
+    if (amt <= 0) {
+        cout << "Invalid Amount\n";
+        return;
+    }
+
     cout << "Enter Location: ";
     cin >> loc;
-    loc = toUpperCase(loc);   // ✅ Normalized
+    loc = toUpperCase(loc);   // Case-insensitive normalization
 
+    // ✅ CORRECT OBJECT CREATION
+    Transaction tx(uid, amt, loc, "DEBIT");
 
-    Transaction tx(uid, amt, loc);
     int risk = FraudEngine::calculateRisk(tx, history[uid]);
 
     cout << "Fraud Risk Score: " << risk << endl;
@@ -71,7 +77,7 @@ void processTransaction(string uid) {
     if (risk >= 70) {
         users[uid].blocked = true;
         FileManager::saveUsers(users);
-        cout << "🚨 FRAUD DETECTED - ACCOUNT BLOCKED 🚨\n";
+        cout << "!! FRAUD DETECTED - ACCOUNT BLOCKED !!\n";
         return;
     }
 
@@ -85,6 +91,7 @@ void processTransaction(string uid) {
         cout << "Insufficient Balance\n";
     }
 }
+
 
 void dashboard(string uid) {
     int choice;

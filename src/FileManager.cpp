@@ -26,8 +26,11 @@ void FileManager::saveTransactions(
     ofstream file("data/transactions.dat");
     for (auto& pair : txs)
         for (auto& t : pair.second)
-            file << t.userId << " " << t.amount << " "
-                 << t.location << " " << t.timestamp << endl;
+            file << t.userId << " "
+                 << t.amount << " "
+                 << t.location << " "
+                 << t.type << " "
+                 << t.timestamp << endl;
     file.close();
 }
 
@@ -37,8 +40,9 @@ void FileManager::loadTransactions(
     if (!file) return;
 
     Transaction t;
-    while (file >> t.userId >> t.amount >>
-           t.location >> t.timestamp)
+    while (file >> t.userId >> t.amount
+           >> t.location >> t.type >> t.timestamp)
         txs[t.userId].push_back(t);
     file.close();
 }
+

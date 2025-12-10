@@ -10,10 +10,11 @@ public:
     string userId;
     double amount;
     string location;
+    string type;   // "CREDIT" or "DEBIT"
     time_t timestamp;
 
     Transaction();
-    Transaction(string uid, double amt, string loc);
+    Transaction(string uid, double amt, string loc, string t);
 };
 
 #endif
