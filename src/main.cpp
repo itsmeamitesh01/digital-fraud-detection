@@ -92,19 +92,46 @@ void processTransaction(string uid) {
     }
 }
 
+void walletRecharge(string uid) {
+    double amt;
+
+    cout << "Enter Recharge Amount: ";
+    cin >> amt;
+
+    if (amt <= 0) {
+        cout << "Invalid Recharge Amount\n";
+        return;
+    }
+
+    // CREDIT transaction (trusted)
+    Transaction tx(uid, amt, "INDIA", "CREDIT");
+
+    users[uid].balance += amt;
+    history[uid].push_back(tx);
+
+    FileManager::saveUsers(users);
+    FileManager::saveTransactions(history);
+
+    cout << "Wallet Recharged Successfully\n";
+}
+
 
 void dashboard(string uid) {
     int choice;
     do {
-        cout << "\n1. Balance\n2. New Transaction\n3. Logout\nChoice: ";
+        cout << "\n1. Balance\n2. Debit Transaction\n3. Wallet Recharge\n4. Logout\nChoice: ";
+
         cin >> choice;
 
         if (choice == 1)
-            cout << "Balance: Rs." << users[uid].balance << endl;
+            cout << "Balance: Rs. " << users[uid].balance << endl;
         else if (choice == 2)
-            processTransaction(uid);
+            processTransaction(uid);   // DEBIT
+        else if (choice == 3)
+            walletRecharge(uid);       // CREDIT
 
-    } while (choice != 3);
+
+    } while (choice != 4);
 }
 
 int main() {
