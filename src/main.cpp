@@ -191,6 +191,91 @@ void dashboard(string uid) {
     } while (choice != 4);
 }
 
+bool adminLogin() {
+    string user, pass;
+
+    cout << "\n--- Admin Login ---\n";
+    cout << "Username: ";
+    cin >> user;
+
+    cout << "Password: ";
+    pass = getHiddenPassword();
+
+    if (user == "admin" && pass == "admin123") {
+        cout << "Admin Login Successful\n";
+        return true;
+    }
+
+    cout << "Invalid Admin Credentials!\n";
+    return false;
+}
+
+string getReadableTime(time_t rawTime) {
+    char buffer[80];
+    struct tm *timeinfo = localtime(&rawTime);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+    return string(buffer);
+}
+
+
+void adminDashboard() {
+    int choice;
+
+    do {
+        cout << "\n--- Admin Dashboard ---\n";
+        cout << "1. View All Users\n";
+        cout << "2. View Blocked Accounts\n";
+        cout << "3. View All Transactions\n";
+        cout << "4. View Suspicious Transactions\n";
+        cout << "5. Logout\n";
+        cout << "Choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            cout << "\n--- All Users ---\n";
+            for (auto &u : users)
+                cout << u.first << " | Balance: " << u.second.balance 
+                     << " | Blocked: " << (u.second.blocked ? "YES" : "NO") << endl;
+        }
+
+        else if (choice == 2) {
+            cout << "\n--- Blocked Accounts ---\n";
+            for (auto &u : users)
+                if (u.second.blocked)
+                    cout << u.first << " | Balance: " << u.second.balance << endl;
+        }
+
+        else if (choice == 3) {
+            cout << "\n--- All Transactions ---\n";
+            for (auto &pair : history) {
+                for (auto &tx : pair.second) {
+                    cout << tx.userId << " | "
+                    << tx.amount << " | "
+                    << tx.location << " | "
+                    << tx.type << " | "
+                    << getReadableTime(tx.timestamp) << endl;
+
+                }
+            }
+        }
+
+        else if (choice == 4) {
+            cout << "\n--- Suspicious Transactions (High Risk) ---\n";
+            for (auto &pair : history) {
+                for (auto &tx : pair.second) {
+                    int risk = FraudEngine::calculateRisk(tx, history[tx.userId]);
+                    if (risk >= 70)
+                        cout << tx.userId << " | " << tx.amount 
+                             << " | " << tx.location << " | " 
+                             << tx.type << " | RISK=" << risk << endl;
+                }
+            }
+        }
+
+    } while (choice != 5);
+}
+
+
 int main() {
     FileManager::loadUsers(users);
     FileManager::loadTransactions(history);
@@ -199,16 +284,27 @@ int main() {
     string uid;
 
     do {
-        cout << "\n1. Create Account\n2. Login\n3. Exit\nChoice: ";
+        cout << "\n1. Create Account";
+        cout << "\n2. Login";
+        cout << "\n3. Admin Login";
+        cout << "\n4. Exit";
+        cout << "\nChoice: ";
         cin >> choice;
 
-        if (choice == 1)
+        if (choice == 1) {
             createUser();
-        else if (choice == 2)
+        }
+        else if (choice == 2) {
             if (login(uid))
                 dashboard(uid);
+        }
+        else if (choice == 3) {                 // ✅ THIS WAS MISSING
+            if (adminLogin())
+                adminDashboard();
+        }
 
-    } while (choice != 3);
+    } while (choice != 4);                      // ✅ EXIT NOW = 4
+
 
     return 0;
 }
