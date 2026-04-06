@@ -45,4 +45,3 @@ void FileManager::loadTransactions(
         txs[t.userId].push_back(t);
     file.close();
 }
-
