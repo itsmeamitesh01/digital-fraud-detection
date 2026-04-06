@@ -1,11 +1,35 @@
 #include "FileManager.h"
 #include <fstream>
+#include <sstream>
+
+// XOR key for basic password obfuscation
+// Not cryptographic - but prevents plaintext passwords in .dat files
+static const uint8_t XOR_KEY = 0x5A;
+
+string obfuscate(const string& password) {
+    ostringstream oss;
+    for (size_t i = 0; i < password.size(); i++) {
+        if (i > 0) oss << "-";
+        oss << (int)((uint8_t)password[i] ^ XOR_KEY);
+    }
+    return oss.str();
+}
+
+string deobfuscate(const string& encoded) {
+    istringstream iss(encoded);
+    string token;
+    string result = "";
+    while (getline(iss, token, '-')) {
+        result += (char)(stoi(token) ^ XOR_KEY);
+    }
+    return result;
+}
 
 void FileManager::saveUsers(const map<string, User>& users) {
     ofstream file("data/users.dat");
     for (auto& u : users)
         file << u.second.userId << " "
-             << u.second.password << " "
+             << obfuscate(u.second.password) << " "
              << u.second.balance << " "
              << u.second.blocked << endl;
     file.close();
@@ -16,8 +40,11 @@ void FileManager::loadUsers(map<string, User>& users) {
     if (!file) return;
 
     User u;
-    while (file >> u.userId >> u.password >> u.balance >> u.blocked)
+    string encodedPass;
+    while (file >> u.userId >> encodedPass >> u.balance >> u.blocked) {
+        u.password = deobfuscate(encodedPass);
         users[u.userId] = u;
+    }
     file.close();
 }
 
